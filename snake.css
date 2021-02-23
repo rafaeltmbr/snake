@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    user-select: none;
+}
+body {
+    background-color: lightgray;
+    width: 100%;
+    height: 100%;
+}
+canvas#snakeGame {
+    display: block;
+    width: 500px;
+    height: 500px;
+    margin: 0px auto;
+    background-color: white;
+    box-shadow: 0px 0px 15px black;
+    border: 10px solid slategray;
+}
+p {
+    font-family: sans-serif;
+    color: white;
+    text-shadow: 1px 1px 4px black;
+    font-size: 25px;
+}
+span#scoreMsg {
+    display: inline-block;
+    float: left;
+}
+span#statusMsg {
+    display: inline-block;
+    float: right;
+}
+svg#control {
+    height: 200px;
+    width: 200px;
+    display: block;
+    margin: 0 auto;
+}
+div#message-control {
+    height: 250px;
+    width:  270px;
+}
+.buttons, .symbols {
+    fill: rgba(255, 255, 255, 0.1);
+    stroke: rgba(112,128,144, 0.5);
+    stroke-width: 5px;
+}		
+rect:active, circle:active, .symbols:active{
+    stroke: rgba(112,128,144, 0.8);
+}		
+path#stop-symbol, path#reload-symbol {
+    display: none;
+}
+rect#full-screen {
+    stroke-width: 0;
+    fill: rgba(0, 0, 0, 0.0);
+}
+path#full-screen-on {
+    display: none;
+}
+text.speedText {
+    font-family: sans-serif;
+    font-size: 40px;
+    stroke-width: 1px;
+    stroke: rgba(112,128,144, 0.5);
+    fill: rgba(112,128,144, 0.5);
+}
+text.speedText:active {        
+    stroke: rgba(112,128,144, 0.5);
+}
+text#speedX {
+    font-size: 25px;
+}
+@media screen and (orientation: portrait) and (max-height: 800px){			
+    div#message-control {
+        position: fixed;
+        left: 50%;
+        bottom: 0;
+        margin-left: -135px;
+        height: 230px;
+    }
+}
+@media screen and (orientation: portrait) and (min-height: 801px){
+    div#main {
+        width: 520px;
+        height: 800px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -260px;
+        margin-top: -400px;
+    }
+    div#message-control {
+        margin: 10px auto;
+    }
+}
+@media screen and (orientation: landscape) and (max-width: 800px) {			
+    canvas#snakeGame {
+        float: left;
+    }
+    div#message-control {
+        position: fixed;
+        top: 50%;
+        right: 5px;
+        margin-top: -125px;
+        width: 200px;
+        height: 270px;
+    }
+    span#scoreMsg, span#statusMsg {
+        display: block;
+        float: none;
+        text-align: center;
+        margin: 5px 0;
+    }
+}
+@media screen and (orientation: landscape) and (min-width: 801px) {
+    div#main {
+        width: 800px;
+        height: 520px;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-left: -400px;
+        margin-top: -260px;
+    }
+    div#message-control {
+        float: right    ;
+        margin-top: 125px;
+    }
+    canvas#snakeGame {
+        float: left;
+    }            
+}

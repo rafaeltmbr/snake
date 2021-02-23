@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title> Snake (Beta 1.3) </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+            user-select: none;
+		}
+		body {
+			background-color: lightgray;
+			width: 100%;
+			height: 100%;
+		}
+		canvas#snakeGame {
+			display: block;
+			width: 500px;
+			height: 500px;
+			margin: 0px auto;
+			background-color: white;
+			box-shadow: 0px 0px 15px black;
+			border: 10px solid slategray;
+		}
+		p {
+			font-family: sans-serif;
+			color: white;
+			text-shadow: 1px 1px 4px black;
+			font-size: 25px;
+		}
+		span#scoreMsg {
+			display: inline-block;
+			float: left;
+		}
+		span#statusMsg {
+			display: inline-block;
+			float: right;
+		}
+		svg#control {
+			height: 200px;
+			width: 200px;
+			display: block;
+			margin: 0 auto;
+		}
+		div#message-control {
+			height: 250px;
+			width:  270px;
+		}
+		.buttons, .symbols {
+			fill: rgba(255, 255, 255, 0.1);
+			stroke: rgba(112,128,144, 0.5);
+			stroke-width: 5px;
+		}		
+		rect:active, circle:active, .symbols:active{
+			stroke: rgba(112,128,144, 0.8);
+		}		
+		path#stop-symbol, path#reload-symbol {
+			display: none;
+		}
+        rect#full-screen {
+            stroke-width: 0;
+            fill: rgba(0, 0, 0, 0.0);
+        }
+        path#full-screen-on {
+            display: none;
+        }
+        text.speedText {
+            font-family: sans-serif;
+            font-size: 40px;
+            stroke-width: 1px;
+            stroke: rgba(112,128,144, 0.5);
+            fill: rgba(112,128,144, 0.5);
+        }
+        text.speedText:active {        
+            stroke: rgba(112,128,144, 0.5);
+        }
+        text#speedX {
+            font-size: 25px;
+        }
+		@media screen and (orientation: portrait) and (max-height: 800px){			
+			div#message-control {
+				position: fixed;
+				left: 50%;
+				bottom: 0;
+				margin-left: -135px;
+                height: 230px;
+			}
+		}
+		@media screen and (orientation: portrait) and (min-height: 801px){
+			div#main {
+				width: 520px;
+				height: 800px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin-left: -260px;
+				margin-top: -400px;
+			}
+			div#message-control {
+				margin: 10px auto;
+			}
+		}
+		@media screen and (orientation: landscape) and (max-width: 800px) {			
+			canvas#snakeGame {
+                float: left;
+            }
+            div#message-control {
+				position: fixed;
+				top: 50%;
+				right: 5px;
+				margin-top: -125px;
+                width: 200px;
+                height: 270px;
+			}
+            span#scoreMsg, span#statusMsg {
+                display: block;
+                float: none;
+                text-align: center;
+                margin: 5px 0;
+            }
+		}
+		@media screen and (orientation: landscape) and (min-width: 801px) {
+			div#main {
+				width: 800px;
+				height: 520px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin-left: -400px;
+				margin-top: -260px;
+			}
+			div#message-control {
+				float: right    ;
+				margin-top: 125px;
+			}
+			canvas#snakeGame {
+				float: left;
+			}            
+		}
+	</style>
+</head>
+<body>
+	<div id="main">
+		<canvas id="snakeGame" width="500" height="500"></canvas>
+		<div id="message-control">
+			<svg id="control">
+            <polygon id="left-arrow"  class="symbols" points="20,100 40,115 40,85"> </polygon>
+            <polygon id="right-arrow" class="symbols" points="180,100 160,115 160, 85"> </polygon>
+            <polygon id="up-arrow"    class="symbols" points="100,20 115,40 85,40"> </polygon>
+            <polygon id="down-arrow"  class="symbols" points="100,180 115,160 85,160"> </polygon>
+            <polygon id="play-symbol" class="symbols" points="115,100 95,115 95, 85"> </polygon>
+            <path    id="stop-symbol" class="symbols" d="M90 85 V115 M110 85 V115"> </path>            
+            <path id="full-screen-off" class="symbols"
+                d=" M170 178 v-8 h8  M187 170 h8 v8  M170 187 v8 h8  M187 195 h8 v-8 "> </path>
+            <path id="full-screen-on" class="symbols"
+                d=" M178 170 v8 h-8  M187 170 v8 h8 M170 187 h8 v8  M195 187 h-8 v8 "> </path>
+            <path id="reload-symbol" class="symbols  buttons"
+                d="M115 95 A15,15 0, 1 0, 115 105 M105 95 h10 v-12"> </path>                
+            <path   id="minusSign"     class="symbols" d="M12 20 h16"> </path>
+            <path   id="plusSign"      class="symbols" d="M172 20 h16  M180 12 v16"> </path>            
+            <rect   id="up"            class="buttons" x="60" y="5" width="80" height="55" rx="10" ry="10"> </rect>
+            <rect   id="right"         class="buttons" x="140" y="60" width="55" height="80" rx="10" ry="10"> </rect>
+            <rect   id="down"          class="buttons" x="60" y="140" width="80" height="55" rx="10" ry="10"> </rect>
+            <rect   id="left"          class="buttons" x="5" y="60" width="55" height="80" rx="10" ry="10"> </rect>
+            <rect   id="full-screen"   class="buttons" x="170" y="170" width="25" height="25"> </rect>
+            <circle id="pause"         class="buttons" cx="100" cy="100" r="30"> </circle>
+            <circle id="speedMinus"    class="buttons" cx="20" cy="20" r="15"> </circle>
+            <circle id="speedPlus"     class="buttons" cx="180" cy="20" r="15"> </circle>
+            <text   id="speedX"        class="symbols speedText" x="0" y="195">x</text>
+            <text   id="speedValue"    class="symbols speedText" x="12" y="195">9</text>
+			</svg>
+			<p><span id="scoreMsg">Score <span id="score"> 0 </span></span> <span id="statusMsg"> Paused </span></p>
+		</div>
+	</div>
+	<script>    
+    (function snakeGame(snakeId = "snakeGame", statusMsgId = "statusMsg", scoreId = "score"){
+        var canvas = document.getElementById(snakeId);
+        var c = canvas.getContext("2d");
+        window.addEventListener("keydown", keyHandler);
+        var gameTimer = null;
+
+        var statusMsg = document.getElementById(statusMsgId);
+        statusMsg.RUNNING = "Running";
+        statusMsg.PAUSED = "Paused";
+        statusMsg.GAMEOVER = "Game Over";
+        statusMsg.innerText = statusMsg.PAUSED;
+        statusMsg.status = statusMsg.innerText;
+
+        var stopSymbol = document.getElementById("stop-symbol");
+        var playSymbol = document.getElementById("play-symbol");
+        var reloadSymbol = document.getElementById("reload-symbol");
+
+        var score = document.getElementById(scoreId);
+        score.accumulator = 0;
+        score.innerText = score.accumulator;
+        
+        var speedValue = document.getElementById("speedValue");
+        if(typeof speedValue.level === "undefined") speedValue.level = 5;
+        speedValue.innerHTML = speedValue.level;
+        
+        var speedElements = document.getElementsByClassName("speedText");
+        (function(){
+            for(var i=0; i < speedElements.length; i++) {
+                var speedStyle = getComputedStyle(speedElements[i]);
+                speedElements[i].defaultStroke = speedStyle.stroke;
+                speedElements[i].defaultFill = speedStyle.fill;
+            }
+        }());
+        stop();
+        
+        var buttons = document.getElementsByClassName("buttons");
+        (function(){
+            var buttonsLength = buttons.length;
+            for(var i=0; i < buttonsLength; i++) buttons[i].addEventListener("click", controlHandler);
+        }());
+
+        var pixels = {x: 25, y: 25};
+        var pixel = {
+            width: parseInt(canvas.width / pixels.x),
+            height: parseInt(canvas.height / pixels.y),
+            x: parseInt(canvas.width / pixels.x) * parseInt(pixels.x/2),
+            y: parseInt(canvas.height / pixels.y) * parseInt(pixels.y/2),
+            color: {r: 0, g: 0, b: 0},
+            dir: "right",
+            draw: function(){
+                c.beginPath();
+                c.fillStyle = "rgb(" + this.color.r + "," + this.color.g + "," + this.color.b + ")";
+                c.fillRect(this.x, this.y, this.width, this.height);
+            },
+            setPosition(x, y) {
+                this.x = x;
+                this.y = y;
+            },
+            equalPosition(x, y){
+                return x === this.x && y === this.y;
+            }
+        };
+
+        var snake = {
+            pixels: [Object.create(pixel)],
+            nextDir: [],
+            draw: function(){
+                this.pixels.forEach(function(pixel){ pixel.draw(); });
+            },
+            inc: function(){
+                var newPixel = Object.create(this.pixels[this.pixels.length-1]);
+                if(newPixel.dir === "right") newPixel.x = newPixel.x - newPixel.width;
+                else if(newPixel.dir === "left") newPixel.x = newPixel.x + newPixel.width;
+                else if(newPixel.dir === "up") newPixel.y = newPixel.y + newPixel.height;
+                else newPixel.y = newPixel.y + newPixel.height;
+
+                this.pixels.push(newPixel);
+                c.clearRect(0, 0, canvas.width, canvas.height);
+                this.changeBodyColor();
+            },
+            changeDirection: function(){
+                this.shiftBody();
+                var head = this.pixels[0];
+                this.updateHeadDir();
+                if(food.equalPosition(head.x, head.y)) this.hitFood();
+                this.moveSnakeHead();
+                if(this.isColision()) this.colisionHandler();
+            },
+            hitFood: function() {
+                this.inc();
+                food.setPosition( parseInt(Math.random()* pixels.x) * food.width,
+                parseInt(Math.random()* pixels.y) * food.height );
+                score.accumulator += speedValue.level;
+                score.innerText = score.accumulator + "";
+            },
+            getNextValidDir: function() {
+                var dir = "";
+                while(this.nextDir.length > 0) {
+                dir = this.nextDir.shift();
+                if(this.isValidDir(dir)) break;
+                else dir = "";
+                }
+                return dir;
+            },
+            moveSnakeHead: function() {
+                var head = this.pixels[0];
+                if(head.dir === "right") head.x += head.width;
+                else if(head.dir === "left")  head.x -= head.width;
+                else if(head.dir === "up") head.y -= head.height;
+                else head.y += head.height;
+            },
+            shiftBody: function(){
+                for(var i=snake.pixels.length-1; i > 0; i--) {
+                    snake.pixels[i].x = snake.pixels[i-1].x;
+                    snake.pixels[i].y = snake.pixels[i-1].y;
+                    snake.pixels[i].dir = snake.pixels[i-1].dir;
+                }
+            },
+            updateHeadDir: function() {
+                var head = this.pixels[0];
+                var lastDir = head.dir;
+                if( (head.dir = this.getNextValidDir()) === "" ) head.dir = lastDir;
+            },
+            isValidDir: function(s){
+                var head = this.pixels[0];
+                return (s === "right" && head.dir !== "left") || (s === "left" && head.dir !== "right") ||
+                       (s === "up" && head.dir !== "down")    || (s === "down" && head.dir !== "up");
+            },
+            isColision: function(){
+                var head = this.pixels[0];
+                for(var i=1; i < this.pixels.length; i++) if(this.pixels[i].equalPosition(head.x, head.y)) return true;
+                return head.x < 0 || head.x >= (head.width * pixels.x) ||
+                       head.y < 0 || head.y >= (head.height * pixels.y);
+            },
+            colisionHandler: function() {
+                statusMsg.status = statusMsg.innerText = statusMsg.GAMEOVER;
+                reloadSymbol.style.display = "inline";
+                playSymbol.style.display = "none";
+                stopSymbol.style.display = "none";
+                clearInterval(gameTimer);
+            },
+            changeBodyColor: function(){
+                if(this.pixels[0].color.g >= 5) this.pixels[0].color.g -= 5;
+                else if(this.pixels[0].color.b >= 5) this.pixels[0].color.b -= 5;
+                else if(this.pixels[0].color.r >= 5) this.pixels[0].color.r -= 5;
+
+                if(this.pixels[1].color.g >= 5) this.pixels[1].color.g -= 5;
+                else if(this.pixels[1].color.b >= 5) this.pixels[1].color.b -= 5;
+                else if(this.pixels[1].color.r >= 5) this.pixels[1].color.r -= 5;
+            }
+        };
+
+        var food = Object.create(pixel);
+        food.setPosition( parseInt(Math.random()* pixels.x)*food.width, parseInt(Math.random()*pixels.y)*food.height );
+        food.color = {r: 218, g: 165, b: 32}; //goldenred
+
+        snake.inc();
+        snake.inc();
+        snake.pixels[0].color = {r: 150, g: 250, b: 200};
+        snake.pixels[1].color = {r: 200, g: 250, b: 200};
+        screenUpdate();
+
+        function screenUpdate(){
+            c.clearRect(0, 0, canvas.width, canvas.height);
+            food.draw();
+            snake.draw();
+        }
+
+        function statusToggle() {
+            if(statusMsg.status === statusMsg.PAUSED) start();
+            else if(statusMsg.status === statusMsg.RUNNING) stop();
+            else {
+                restoreDefaults();
+                snakeGame();
+            }                
+        }
+        
+        function timerUpdate() {
+            clearInterval(gameTimer);
+            gameTimer = setInterval(function(){
+                snake.changeDirection();
+                screenUpdate();
+            }, 600 / speedValue.level);        
+        }
+
+        function start() {
+            if(statusMsg.status !== statusMsg.PAUSED) return;
+            timerUpdate();
+            statusMsg.status = statusMsg.innerText = statusMsg.RUNNING;
+            playSymbol.style.display = "none";
+            stopSymbol.style.display = "inline";
+            for(var i=0; i <speedElements.length; i++) {
+                speedElements[i].style.stroke = speedElements[i].defaultStroke;
+                speedElements[i].style.fill = speedElements[i].defaultFill;
+            }
+        }
+
+        function stop(){
+            statusMsg.innerText = statusMsg.PAUSED;
+            statusMsg.status = statusMsg.innerText;
+            playSymbol.style.display = "inline";
+            stopSymbol.style.display = "none";
+            clearInterval(gameTimer);
+            for(var i=0; i < speedElements.length; i++) {
+                speedElements[i].style.stroke = "rgba(112,128,144, 1.0)";
+                speedElements[i].style.fill = "rgba(112,128,144, 1.0)";
+            }
+        }
+        
+        function fullScreenToggle(){
+            if(typeof fullScreenToggle.flag === "undefined") {
+                fullScreenToggle.flag = false;
+                fullScreenToggle.on = document.getElementById("full-screen-on");
+                fullScreenToggle.off = document.getElementById("full-screen-off");
+            }
+            if(fullScreenToggle.flag) {
+                exitFullscreenMethods();
+                fullScreenToggle.flag = false;
+                fullScreenToggle.on.style.display = "none";
+                fullScreenToggle.off.style.display = "inline";
+            } else {
+                requestFullscreenMethods();
+                fullScreenToggle.flag = true;
+                fullScreenToggle.on.style.display = "inline";
+                fullScreenToggle.off.style.display = "none";
+            }
+        }
+        
+        function requestFullscreenMethods(){
+            var elem = document.documentElement;
+            if(elem.requestFullscreen) elem.requestFullscreen();
+            else if(elem.mozRequestFullscreen) elem.mozRequestFullscreen(); /* Firefox */
+            else if(elem.webkitRequestFullscreen) elem.webkitRequestFullscreen(); /*Chrome, Opera & Safari */
+            else if(elem.msRequestFullscreen) elem.msRequestFullscreen(); /* Edge/IE */
+        }
+        
+        function exitFullscreenMethods() {        
+            if(document.exitFullscreen) document.exitFullscreen();
+            else if(document.mozCancelFullscreen) document.mozCancelFullscreen(); /* Firefox */
+            else if(document.webkitExitFullscreen) document.webkitExitFullscreen(); /* Chrome, Opera & Safari */
+            else if(document.msExitFullscreen) document.msExitFullscreen(); /* Edge/IE */
+        }
+        
+        function changeSpeedLevel(c) {
+            if(statusMsg.status !== statusMsg.PAUSED) return;
+            if(c === "+" && speedValue.level < 10) speedValue.level++;
+            else if(c === "-" && speedValue.level > 1) speedValue.level--;
+            speedValue.innerHTML = speedValue.level;
+        }
+
+        function keyHandler(event){
+            var k = event.key;
+            if     (k === "ArrowRight" || k === "d" || k === "right") k = "right";
+            else if(k === "ArrowLeft"  || k === "a" || k === "left") k = "left";
+            else if(k === "ArrowUp"    || k === "w" || k === "up") k = "up";
+            else if(k === "ArrowDown"  || k === "s" || k === "down") k = "down";
+            else if(k === " " || k === "pause") return statusToggle();
+            else if(k === "full-screen") return fullScreenToggle();
+            else if (k === "speedMinus" || k === "-") return changeSpeedLevel("-");
+            else if (k === "speedPlus" || k === "+") return changeSpeedLevel("+");
+            else return;
+
+            while(snake.nextDir.length > 1) snake.nextDir.shift();
+            snake.nextDir.push(k)
+            if( ( snake.nextDir[0] === snake.pixels[0].dir ) || !snake.isValidDir(snake.nextDir[0]) )
+            snake.nextDir.reverse();
+            start();
+        }
+
+        function controlHandler(event) {
+            event.key = event.target.id;
+            keyHandler(event);
+        }
+        
+        function restoreDefaults() {
+            window.removeEventListener("keydown", keyHandler);
+            for(var i=0; i < buttons.length; i++) buttons[i].removeEventListener("click", controlHandler);
+            food = "undefined";
+            snake.pixels = "undefined";
+            snake.nextDir = "undefined";
+            snake = "undefined";
+            pixel = "undefined";
+            buttons = "undefined";
+            score = "undefined";
+            stopSymbol.style.display = "none";
+            reloadSymbol.style.display = "none";
+            playSymbol.style.display = "inline";
+            c = "undefined";
+            canvas = "undefined";
+        }
+    }());
+
+    (function layoutHandler(){
+        var gameWindow = document.getElementById("snakeGame");
+        if(typeof gameWindow.initStyle === "undefined") setGameWindowDefault();
+        window.addEventListener("resize", resizeGameWindow);
+        resizeGameWindow();
+
+        function setGameWindowDefault() {
+            var gameStyle = getComputedStyle(gameWindow);
+            gameWindow.initStyle = {};
+            gameWindow.initStyle.width = gameStyle.width;
+            gameWindow.initStyle.height = gameStyle.height;
+            gameWindow.initStyle.offsetWidth = gameWindow.offsetWidth;
+            gameWindow.initStyle.offsetHeight = gameWindow.offsetHeight;
+            gameWindow.initStyle.additionalWidth = gameWindow.offsetWidth - parseInt(gameStyle.width);
+            gameWindow.initStyle.additionalHeight = gameWindow.offsetHeight - parseInt(gameStyle.height);
+        }
+
+        function resizeGameWindow() {
+            var screen = document.documentElement;
+            if(gameWindow.initStyle.offsetWidth > screen.clientWidth) {
+                gameWindow.style.setProperty("width", screen.clientWidth - gameWindow.initStyle.additionalWidth + "px");
+                gameWindow.style.setProperty("height", screen.clientWidth - gameWindow.initStyle.additionalWidth +"px");
+                gameWindow.style.setProperty("margin", "0");
+            } else if(gameWindow.initStyle.offsetHeight > screen.clientHeight) {
+                gameWindow.style.setProperty("width", screen.clientHeight - gameWindow.initStyle.additionalHeight+"px");
+                gameWindow.style.setProperty("height", screen.clientHeight -gameWindow.initStyle.additionalHeight+"px");
+                gameWindow.style.setProperty("margin", "0");
+            } else {
+                gameWindow.style.setProperty("width", gameWindow.initStyle.width);
+                gameWindow.style.setProperty("height", gameWindow.initStyle.height);
+                gameWindow.style.setProperty("margin", "10px auto");
+            }
+        }
+    }());
+	</script>	
+</body>
+</html>

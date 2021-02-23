@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<title> Snake (Beta 1.3) </title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="snake.css">
+</head>
+<body>
+	<div id="main">
+		<canvas id="snakeGame" width="500" height="500"></canvas>
+		<div id="message-control">
+			<svg id="control">
+            <polygon id="left-arrow"  class="symbols" points="20,100 40,115 40,85"> </polygon>
+            <polygon id="right-arrow" class="symbols" points="180,100 160,115 160, 85"> </polygon>
+            <polygon id="up-arrow"    class="symbols" points="100,20 115,40 85,40"> </polygon>
+            <polygon id="down-arrow"  class="symbols" points="100,180 115,160 85,160"> </polygon>
+            <polygon id="play-symbol" class="symbols" points="115,100 95,115 95, 85"> </polygon>
+            <path    id="stop-symbol" class="symbols" d="M90 85 V115 M110 85 V115"> </path>            
+            <path id="full-screen-off" class="symbols"
+                d=" M170 178 v-8 h8  M187 170 h8 v8  M170 187 v8 h8  M187 195 h8 v-8 "> </path>
+            <path id="full-screen-on" class="symbols"
+                d=" M178 170 v8 h-8  M187 170 v8 h8 M170 187 h8 v8  M195 187 h-8 v8 "> </path>
+            <path id="reload-symbol" class="symbols  buttons"
+                d="M115 95 A15,15 0, 1 0, 115 105 M105 95 h10 v-12"> </path>                
+            <path   id="minusSign"     class="symbols" d="M12 20 h16"> </path>
+            <path   id="plusSign"      class="symbols" d="M172 20 h16  M180 12 v16"> </path>            
+            <rect   id="up"            class="buttons" x="60" y="5" width="80" height="55" rx="10" ry="10"> </rect>
+            <rect   id="right"         class="buttons" x="140" y="60" width="55" height="80" rx="10" ry="10"> </rect>
+            <rect   id="down"          class="buttons" x="60" y="140" width="80" height="55" rx="10" ry="10"> </rect>
+            <rect   id="left"          class="buttons" x="5" y="60" width="55" height="80" rx="10" ry="10"> </rect>
+            <rect   id="full-screen"   class="buttons" x="170" y="170" width="25" height="25"> </rect>
+            <circle id="pause"         class="buttons" cx="100" cy="100" r="30"> </circle>
+            <circle id="speedMinus"    class="buttons" cx="20" cy="20" r="15"> </circle>
+            <circle id="speedPlus"     class="buttons" cx="180" cy="20" r="15"> </circle>
+            <text   id="speedX"        class="symbols speedText" x="0" y="195">x</text>
+            <text   id="speedValue"    class="symbols speedText" x="12" y="195">9</text>
+			</svg>
+			<p><span id="scoreMsg">Score <span id="score"> 0 </span></span> <span id="statusMsg"> Paused </span></p>
+		</div>
+	</div>
+	<script src="snake.js"></script>	
+</body>
+</html>
